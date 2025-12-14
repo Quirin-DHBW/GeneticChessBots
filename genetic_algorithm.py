@@ -106,7 +106,7 @@ n_fights = 2
 
 # Create history csv with header if it doesn't exist yet, we're using semicolon separation
 with open(f"history.csv", "w") as f:
-    f.write("Generation;Bot Index;Bot Identifier;Overall Ranking;Weights\n")
+    f.write("Generation;Bot Index;Bot Identifier;Score;Fitness;Overall Ranking;Weights\n")
 
 # We now initialize the population of chess bots
 # But we store them as dicts so we can keep track of their scores
@@ -165,10 +165,6 @@ for gen in range(generations):
     if len(survivors_purge_1) > (n_pops - n_purged):
         survivors_purge_2 = rng.sample(survivors_purge_1, k=(n_pops - n_purged))
     
-    # Now that death has happened, reset fitness and score for the next generation
-    for bot in survivors_purge_2:
-        bot["fitness"] = 0
-        bot["score"] = {"win":0, "loss":0, "draw":0}
     
     print("The survivors keep living...")
     # Nature is healing (aka time to reproduce UwU)
@@ -187,7 +183,11 @@ for gen in range(generations):
     
     assert len(bots) == n_pops
 
-
     with open(f"history.csv", "a") as f:
         for index, bot in enumerate(bots):
-            f.write(f"{gen + 1};{index};{bot['ident']};{bot['ranking']};{bot['weights']}\n")
+            f.write(f"{gen + 1};{index};{bot['ident']};{bot['score']};{bot['fitness']};{bot['ranking']};{bot['weights']}\n")
+    
+    # Now that the generation is over, reset all scores for the next generation
+    for bot in bots:
+        bot["fitness"] = 0
+        bot["score"] = {"win":0, "loss":0, "draw":0}

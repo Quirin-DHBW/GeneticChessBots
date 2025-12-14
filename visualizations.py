@@ -13,16 +13,26 @@ def extract_weights(weight_str):
 
 df['Weights Dict'] = df['Weights'].apply(extract_weights)
 
-# And now make the dict into actual columns, so we can plot them more easily
+# And now make the dicts into actual columns, so we can plot them more easily
+scores_df = pd.json_normalize(df['Score'])
+df = pd.concat([df, scores_df], axis=1)
 weights_df = pd.json_normalize(df['Weights Dict'])
 df = pd.concat([df, weights_df], axis=1)
 
-# And now a plot showing the average weights (just as bars) of a generation, with a slider for the generations
+"""# Weights per generation
 fig = px.histogram(
     df,
     x=list(weights_df.columns),
     animation_frame="Generation",
     nbins=100)
-fig.show()
+fig.show()"""
 
+# Fitness per weight
+fig = px.scatter(
+    df,
+    x=list(weights_df.columns),
+    y="Fitness",
+    animation_frame="Generation"
+)
+fig.show()
 
